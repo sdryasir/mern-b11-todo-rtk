@@ -2,26 +2,36 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteTodo, fetchTodos } from '../features/todo/todoSlice';
 import { useEffect } from 'react';
-import {useGetAllTodosQuery} from '../features/todo/todoSlice'
+import {Link} from 'react-router-dom';
+import {useGetAllTodosQuery, useDeleteTodoMutation, useUpdateTodoMutation} from '../features/todo/todoSlice'
 
 function TodoList() {
 
     const {data, error, isLoading} = useGetAllTodosQuery()
+    const [deleteTodo] = useDeleteTodoMutation()
+    const [updateTodo] = useUpdateTodoMutation()
     // const dispatch = useDispatch()
 
-
+console.log(error);
 
     const handleDelete = async (id) => {
-        
-            // dispatch(deleteTodo(id))
-        // // send DELETE request to API
-        // await fetch(`http://localhost:1000/v1/todo/delete/${id}`, {
-        //     method: 'DELETE',
-        // });
-
+        console.log(id);
+        try {
+            await deleteTodo(id)
+        } catch (error) {
+            console.log(error)
+        }
         
     }
-
+    
+    const handleUpdate = async (t) => {
+        try {
+            await updateTodo(t)
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
    
 
     // useEffect(() => {
@@ -29,7 +39,7 @@ function TodoList() {
     // }, [dispatch])
 
     if(isLoading) return <h1>Loading...</h1>
-    if(error) return <h3>Something went wrong..</h3>
+    if(error) return <h3>{error.error}</h3>
 
     return (
         <div className=' mt-5'><ul className="list-group">
@@ -43,15 +53,20 @@ function TodoList() {
                         return (
                             <li  key= {idx} className="list-group-item d-flex justify-content-between">
                                 <span>{todo?.title}</span>
-                                <i className="bi bi-trash" style={{ cursor: 'pointer' }} onClick={() => handleDelete(todo?.id)}></i></li>
+                                <i className="bi bi-trash" style={{ cursor: 'pointer' }} onClick={() => handleDelete(todo?._id)}></i>
+                                <Link to={`/edit/${todo._id}`}><i className="bi bi-pencil" style={{ cursor: 'pointer' }}></i></Link>                                </li>
                         )
                     })
                     
 
             }
+
+
+            
              
              
         </ul>
+        
         </div>
         
     )

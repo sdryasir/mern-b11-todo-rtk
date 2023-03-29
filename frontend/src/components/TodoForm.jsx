@@ -7,7 +7,7 @@ import {useAddTodoMutation} from '../features/todo/todoSlice'
 
 function TodoForm() {
 
-
+    const [AddTodo, {isLoading}] = useAddTodoMutation();
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
 
@@ -32,9 +32,11 @@ function TodoForm() {
 
         }
             
-        
-
-        // dispatch(addTodo(newTodo))
+    try {
+        await AddTodo(newTodo).unwrap()
+    } catch (error) {
+        console.log(error);
+    }
 
        document.getElementById('form').reset()
     }

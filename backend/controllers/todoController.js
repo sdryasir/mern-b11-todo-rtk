@@ -33,6 +33,8 @@ export const updateTodo = async (req, res) => {
     const { id } = req.params;
     const body = req.body
 
+    console.log(id, body);
+
     await Todo.findByIdAndUpdate(id, body)
 
     res.json({ message: "Todo has been Updated" })
