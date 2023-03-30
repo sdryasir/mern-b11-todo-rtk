@@ -4,10 +4,18 @@ import { Todo } from "../model/todoSchema.js"
 
 export const getAllTodos = async (req, res) => {
 
-    const todos = await Todo.find()
+    
+
+    let todos = await Todo.find()
+    
+    todos = todos.filter((todo)=>{
+        return todo.title.includes(req.query.search)
+    })
+
 
     res.json({ todos: todos })
 }
+
 
 export const getTodoById = async (req, res, next) => {
 
