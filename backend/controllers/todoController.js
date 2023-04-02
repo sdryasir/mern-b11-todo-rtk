@@ -4,16 +4,39 @@ import { Todo } from "../model/todoSchema.js"
 
 export const getAllTodos = async (req, res) => {
 
+    const page = parseInt(req.query.page) - 1 || 0;
+    const limit =  parseInt(req.query.limit) || 5;
+    const search = req.query.search || "";
+    let sort = req.query.sort || "_id";
+    req.query.sort ? (sort=req.query.sort.split(",")) : (sort=[sort])
+
+    let sortBy = {};
+    if(sort[1]){
+        sortBy[sort[0]] = sort[1]
+    }else{
+        sortBy[sort[0]] = "asc"
+    }
+
+
+    let todos = await Todo.find({title:{$regex:search, $options:"i"}}).sort(sortBy).skip(page*limit).limit(limit)
+    let total = await Todo.countDocuments({title:{$regex:search, $options:"i"}})
+
+    let pageCount = Math.ceil(total/limit)
+    // let todos = await Todo.find({
+    //     "$or":[
+    //         {title:{$regex: searchTerm}},
+    //         {body:{$regex: searchTerm}},
+    //     ]
+    // })
     
 
-    let todos = await Todo.find()
-    
-    todos = todos.filter((todo)=>{
-        return todo.title.includes(req.query.search)
+    res.json({ 
+        todos,
+        total,
+        page: page+1,
+        limit,
+        pageCount
     })
-
-
-    res.json({ todos: todos })
 }
 
 
