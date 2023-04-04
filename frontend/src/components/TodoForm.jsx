@@ -32,13 +32,12 @@ function TodoForm() {
 
         }
             
-    try {
-        await AddTodo(newTodo).unwrap()
-    } catch (error) {
-        console.log(error);
-    }
-
-       document.getElementById('form').reset()
+        try {
+            await AddTodo(newTodo).unwrap()
+            
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 
