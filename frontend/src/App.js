@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
 import EditTodo from './components/EditTodo'
-
+import PrivateRoutes from './components/ProtectedRoutes';
 function App() {
    
    
@@ -13,10 +13,14 @@ function App() {
     <Router>
     <Navbar />
       <Routes>
-      <Route path='/'   element={ <TodoForm/>} />
+
+      <Route element={<PrivateRoutes/>}>
+        <Route path='/'   element={ <TodoForm/>} />
+        <Route path='/edit/:id' element={ <EditTodo />} />
+      </Route>
+
       <Route path='/auth/register' element={ <SignUp />} />
       <Route path='/auth/login' element={ <Login />} />
-      <Route path='/edit/:id' element={ <EditTodo />} />
     </Routes>
     </Router>
     </>
