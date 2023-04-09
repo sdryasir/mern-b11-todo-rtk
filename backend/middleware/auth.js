@@ -3,13 +3,13 @@ import jwt from "jsonwebtoken";
 
 export const isAuthenticatedUser = (req, res, next)=>{
     
-    const token = req.cookies.token
+    const { accessToken, refreshToken } = req.cookies;
 
-    if(!token){
+    if(!accessToken){
         next(new Error('Please Login to access this resource'))
     }
 
-     const decode =  jwt.verify(token, '-YJN-yYNCn1CxYPLypyCoSEUN5r1XsdFhKmeQnle0s5O0qB_StUwn-ZOBV4DXVwIBnq7X3XVfgdpuSj4PyUHZUroJWnR5ChEd4-nkLIejICV6MOCOvU-Tmie_iXu4eCcK9tdWnMvsMNnKf29UcduJNyuR7CFhKmlq-Dq10uiv6c')
+     const decode =  jwt.verify(accessToken, 'qweqwe2342342342344234sdfsdf')
 
     req.user = decode.user;
 

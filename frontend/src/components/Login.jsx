@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { makeStyles } from 'tss-react/mui';
+import { useNavigate } from 'react-router-dom';
+
+import {useDispatch} from 'react-redux';
+import {setCredentials} from '../features/auth/authSlice';
+import { useLoginMutation } from '../features/auth/apiSlice';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,31 +21,35 @@ const useStyles = makeStyles((theme) => ({
 function Login(){
   const classes = useStyles();
 
-  
+  const navigate = useNavigate();
+  const [login, {isLoading}] = useLoginMutation();
+  const dispatch = useDispatch();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
 
+
   const handleSubmit = async(event) => {
     event.preventDefault();
 
-    const loginDetails = {
-        username,
-        password,
-
+    try {
+      const userData = await login({username, password}).unwrap();
+      dispatch(setCredentials({...userData, username}))
+      setUsername('')
+      setPassword('')
+      navigate('/')
+    } catch (error) {
+      console.log(error);
     }
 
-    await fetch('http://localhost:1000/v1/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(loginDetails)
-        });
    
     setUsername('');
     setPassword('');
   };
+
+
+  if(isLoading) return <h1>Loading---</h1>
 
   return (
     <form className={`${classes.root} container mt-4`} onSubmit={handleSubmit} id='form'>

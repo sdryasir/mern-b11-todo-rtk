@@ -23,7 +23,9 @@ export const registerUser = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
 
+
     const { username, password } = req.body;
+
 
     if (!username) {
         next(new Error('Please provide username'))
@@ -47,19 +49,21 @@ export const loginUser = async (req, res, next) => {
     }
 
     //JWT authentication
-    const token = jwt.sign({ user: user }, '-YJN-yYNCn1CxYPLypyCoSEUN5r1XsdFhKmeQnle0s5O0qB_StUwn-ZOBV4DXVwIBnq7X3XVfgdpuSj4PyUHZUroJWnR5ChEd4-nkLIejICV6MOCOvU-Tmie_iXu4eCcK9tdWnMvsMNnKf29UcduJNyuR7CFhKmlq-Dq10uiv6c')
+    const accessToken = jwt.sign({ user: user }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'5s' })
+    const refreshToken = jwt.sign({ id: user._id }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'1y' })
 
-    res.cookie("token", token, { expires: new Date(Date.now() + 360000) , httpOnly: true }).json({
-        user
-    })
+    // set access token in cookie
+    // res.cookie("accessToken", accessToken, {
+    //     maxAge: 300000, // 5 minutes
+    //     httpOnly: true,
+    // });
 
-    try {
+    res.cookie("refreshToken", refreshToken, {
+        maxAge: 3.154e10, // 1 year
+        httpOnly: true,
+    });
 
-
-    } catch (error) {
-        next(error)
-    }
-
+    res.json({ user, accessToken })
 
 }
 

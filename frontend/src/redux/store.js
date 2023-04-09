@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import todoReducer from '../features/todo/todoSlice'
 
-import { getDefaultMiddleware } from '@reduxjs/toolkit';
+import { apiSlice } from '../features/auth/apiSlice';
+import authReducer from '../features/auth/authSlice';
 
 import { persistStore, persistReducer } from 'redux-persist'
 
@@ -14,20 +15,18 @@ const persistConfig = {
     storage,
   }
   
-  //const persistedReducer = persistReducer(persistConfig, todoReducer)
+  const persistedReducer = persistReducer(persistConfig, authReducer)
 
 
 export const store = configureStore({
  
   reducer:{
     [todoApi.reducerPath]: todoApi.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    auth: persistedReducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(todoApi.middleware)
-
-    // reducer : persistedReducer,
-    // middleware : (getDefaultMiddleware) => getDefaultMiddleware({
-    //     serializableCheck: false,
-    //   })
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([todoApi.middleware, apiSlice.middleware]),
+  devTools:true
 })
 
-// export const persistor = persistStore(store)
+ export const persistor = persistStore(store)
