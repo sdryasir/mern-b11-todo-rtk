@@ -8,6 +8,7 @@ const baseQuery = fetchBaseQuery({
     //credentials:'include',
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token
+      console.log("🚀 ~ file: apiSlice.js:11 ~ token:", token)
       if (token) {
         headers.set('authorization', `Bearer ${token}`)
       }

@@ -2,7 +2,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const todoApi = createApi({
     reducerPath:'todoApi',
-    baseQuery:fetchBaseQuery({baseUrl:'http://localhost:8000/v1/'}),
+    baseQuery:fetchBaseQuery({
+      baseUrl:'http://localhost:8000/v1/',
+      prepareHeaders: (headers, { getState }) => {
+        const token = getState().auth.token
+        if (token) {
+          headers.set('authorization', `Bearer ${token}`)
+        }
+    
+        return headers
+      }
+    }),
     tagTypes: ['Todo'],
     endpoints:(builder)=>({
       getAllTodos: builder.query({

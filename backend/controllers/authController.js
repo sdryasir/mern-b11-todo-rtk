@@ -49,8 +49,8 @@ export const loginUser = async (req, res, next) => {
     }
 
     //JWT authentication
-    const accessToken = jwt.sign({ user: user }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'5s' })
-    const refreshToken = jwt.sign({ id: user._id }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'1y' })
+    const accessToken = jwt.sign({ user: user }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'1m' })
+    const refreshToken = jwt.sign({ user: user }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'1y' })
 
     // set access token in cookie
     // res.cookie("accessToken", accessToken, {
@@ -68,8 +68,32 @@ export const loginUser = async (req, res, next) => {
 }
 
 
-export const logOutUser = async (req, res, next) => {
-    res.cookie("token", null, { expires: new Date(Date.now()) }).json({
-        message:"You are logged out"
-    })
+export const refresh = async (req, res, next) => {
+    const { refreshToken } = req.cookies;
+
+    if(!refreshToken){
+        next(new Error('Uauthorized, Refresh Token Not Found!'))
+    }
+
+    jwt.verify( refreshToken, 'qweqwe2342342342344234sdfsdf', async (err, decoded) => {
+            if (err) return res.status(403).json({ message: 'Forbidden' })
+
+            const user = await User.findOne({ _id: decoded.id }).exec()
+
+            if (!user) return res.status(401).json({ message: 'Unauthorized, Invalid Refresh Token' })
+
+            const accessToken = jwt.sign({ user: user }, 'qweqwe2342342342344234sdfsdf', {  expiresIn:'1m' })
+
+            res.json({ accessToken })
+        }
+    )
 }
+
+
+export const logOutUser = async (req, res, next) => {
+    const cookies = req.cookies
+    if (!cookies?.refreshToken) return res.sendStatus(204) //No content
+    res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'None' })
+    res.json({ message: 'Cookie cleared' })
+}
+

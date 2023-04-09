@@ -3,13 +3,17 @@ import jwt from "jsonwebtoken";
 
 export const isAuthenticatedUser = (req, res, next)=>{
     
-    const { accessToken, refreshToken } = req.cookies;
 
-    if(!accessToken){
-        next(new Error('Please Login to access this resource'))
+    const authHeader = req.headers.authorization || req.headers.Authorization
+
+    if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Unauthorized' })
     }
 
-     const decode =  jwt.verify(accessToken, 'qweqwe2342342342344234sdfsdf')
+    const token = authHeader.split(' ')[1]
+
+     const decode =  jwt.verify(token, 'qweqwe2342342342344234sdfsdf')
+     
 
     req.user = decode.user;
 

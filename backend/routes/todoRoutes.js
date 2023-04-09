@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 
-router.route('/todos').get(getAllTodos);
+router.route('/todos').get(isAuthenticatedUser, getAllTodos);
 
 router.route('/todo/:id').get(getTodoById);
 
